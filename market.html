@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            let symbol = urlParams.get('tvwidgetsymbol');
+
+            if (!symbol) { symbol = "FX:EURUSD"; }
+
+            //We use the 'symbol' parameter which the main site actually understands
+            const cleanUrl = `https://www.tradingview.com/chart/?symbol=${symbol}`;
+
+            //Redirect the user immediately
+            window.location.replace(cleanUrl);
+    }
+    </script>
+    </head>
+    <body>
+        <p>Redirecting to chart...</p>
+    </body>
+</html>
