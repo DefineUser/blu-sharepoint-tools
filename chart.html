@@ -1,60 +1,89 @@
-<div class="tradingview-widget-container">
-  <div class="tradingview-widget-container__widget"></div>
-  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-  {
-  "colorTheme": "light",
-  "dateRange": "12M",
-  "locale": "en",
-  "largeChartUrl": "https://defineuser.github.io/blu-sharepoint-tools/market.html",
-  "isTransparent": false,
-  "showFloatingTooltip": false,
-  "plotLineColorGrowing": "rgba(41, 98, 255, 1)",
-  "plotLineColorFalling": "rgba(41, 98, 255, 1)",
-  "gridLineColor": "rgba(240, 243, 250, 0)",
-  "scaleFontColor": "#0F0F0F",
-  "belowLineFillColorGrowing": "rgba(41, 98, 255, 0.12)",
-  "belowLineFillColorFalling": "rgba(41, 98, 255, 0.12)",
-  "belowLineFillColorGrowingBottom": "rgba(41, 98, 255, 0)",
-  "belowLineFillColorFallingBottom": "rgba(41, 98, 255, 0)",
-  "symbolActiveColor": "rgba(41, 98, 255, 0.12)",
-  "tabs": [
-    {
-      "title": "Brent Futures",
-      "symbols": [
-        {
-          "s": "ICEEUR:BRN1!",
-          "d": "Front Month"
-        },
-        {
-          "s": "ICEEUR:BRN2!",
-          "d": "Month 2"
-        },
-        {
-          "s": "ICEEUR:BRN3!",
-          "d": "Month 3"
-        },
-        {
-          "s": "ICEEUR:BRN4!",
-          "d": "Month 4"
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { margin: 0; padding: 0; background-color: transparent; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .toolbar { padding: 10px; background: #f3f2f1; border-bottom: 1px solid #e1dfdd; display: flex; gap: 10px; }
+        .btn { padding: 8px 16px; background-color: #0078d4; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600; }
+        .btn:hover { background-color: #106ebe; }
+        
+        /* We use two containers to hold the different widgets */
+        .view-container { height: 550px; width: 100%; display: none; }
+        #chart-view { display: block; } /* Show chart by default */
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <button class="btn" onclick="switchView('chart')">Live Chart (UKOIL)</button>
+        <button class="btn" onclick="switchView('table')">Forward Contracts List</button>
+    </div>
+
+    <div id="chart-view" class="view-container">
+        <div class="tradingview-widget-container" id="tv_chart"></div>
+    </div>
+
+    <div id="table-view" class="view-container">
+        <div class="tradingview-widget-container" id="tv_table"></div>
+    </div>
+
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        // 1. Initialize the Chart
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": "TVC:UKOIL",
+            "interval": "D",
+            "timezone": "Etc/UTC",
+            "theme": "light",
+            "style": "1",
+            "locale": "en",
+            "enable_publishing": false,
+            "hide_top_toolbar": false,
+            "hide_legend": false,
+            "save_image": false,
+            "container_id": "tv_chart"
+        });
+
+        // 2. Initialize the Contracts Table (Using the NYMEX workaround)
+        var tableScript = document.createElement('script');
+        tableScript.type = 'text/javascript';
+        tableScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js";
+        tableScript.async = true;
+        tableScript.innerHTML = JSON.stringify({
+          "width": "100%",
+          "height": "100%",
+          "symbolsGroups": [
+            {
+              "name": "Brent Crude Futures (Continuous)",
+              "originalName": "Commodities",
+              "symbols": [
+                { "name": "NYMEX:BZ1!", "displayName": "Front Month (Current)" },
+                { "name": "NYMEX:BZ2!", "displayName": "Month 2" },
+                { "name": "NYMEX:BZ3!", "displayName": "Month 3" },
+                { "name": "NYMEX:BZ4!", "displayName": "Month 4" },
+                { "name": "NYMEX:BZ5!", "displayName": "Month 5" },
+                { "name": "NYMEX:BZ6!", "displayName": "Month 6" }
+              ]
+            }
+          ],
+          "showSymbolLogo": false,
+          "isTransparent": true,
+          "colorTheme": "light",
+          "locale": "en"
+        });
+        document.getElementById('tv_table').appendChild(tableScript);
+
+        // 3. The Toggle Logic
+        function switchView(target) {
+            if(target === 'chart') {
+                document.getElementById('chart-view').style.display = 'block';
+                document.getElementById('table-view').style.display = 'none';
+            } else {
+                document.getElementById('chart-view').style.display = 'none';
+                document.getElementById('table-view').style.display = 'block';
+            }
         }
-      ],
-      "originalTitle": "Commodities"
-    },
-    {
-      "title": "Forex",
-      "symbols": [
-        { "s": "FX:USDJPY" },
-        { "s": "FX:GBPUSD" },
-        { "s": "FX:EURUSD" },
-        { "s": "OANDA:USDSGD" }
-      ]
-    }
-  ],
-  "support_host": "https://www.tradingview.com",
-  "width": "100%",
-  "height": "100%",
-  "showSymbolLogo": true,
-  "showChart": true
-}
-  </script>
-</div>
+    </script>
+</body>
+</html>
